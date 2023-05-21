@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug CMake",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/output/${fileBasenameNoExtension}.exe",
+            "args": [
+                "--name",
+                "Test"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/output",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb"
+        }
+    ],
+    "argsAfterLaunch": ["-name", "Test"],
+    "compounds": []
+}
