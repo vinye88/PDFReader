@@ -9,76 +9,9 @@
 #include <tuple>
 #include <cxxopts.hpp>
 
+#include "EasyFileHandle.hpp"
 #include "PDFTopicReader.hpp"
 #include "Deck.hpp"
-
-std::vector<std::string> getLines(std::string filePath)
-{
-    std::vector<std::string> lines;
-    std::ifstream file(filePath, std::ios::in);
-    
-    if (file.is_open())
-    {
-        std::string line;
-        while ( std::getline(file, line) )
-            lines.push_back(line);
-    }
-
-    return lines;
-}
-
-void printFile(std::string filePath)
-{
-    for (auto line : getLines(filePath))
-    {
-        std::cout << line << std::endl;
-    }
-}
-
-void writeFile(std::string filePath, std::vector<std::string> lines)
-{
-    std::ofstream file(filePath, std::ios::out);
-    
-    if (file.is_open())
-        for (std::string line : lines)
-            file << line << std::endl;
-    
-    file.close();
-}
-
-std::vector<std::string> getFileList(std::string path, std::string ext)
-{
-    std::vector<std::string> list;
-
-    for (const auto& entry : std::filesystem::directory_iterator(path))
-    {
-        if (std::filesystem::is_regular_file(entry.path()))
-        {
-            std::string filePath = entry.path().string();
-            if (filePath.substr(filePath.find_last_of('.') + 1 ) == ext)
-                list.push_back(filePath);
-        }
-    }
-
-    return list;
-}
-
-std::string getCsvFileName(std::string file)
-{
-    return file.substr(0,file.find_last_of('.')) + ".csv";
-}
-
-std::string getFileName(std::string fileName)
-{
-    size_t pos {0};
-    std::string delimiter = "/";
-    std::string txt = fileName;//fileName.replace(0, fileName.length()-1, '\\', delimiter[0]);
-    
-    while ((pos = txt.find(delimiter)) != std::string::npos) 
-        txt.erase(0, pos + delimiter.length());
-
-    return txt.substr(0,txt.find_last_of('.'));
-}
 
 std::tuple<std::string,std::string> verifyInput(cxxopts::ParseResult result)
 {
@@ -115,7 +48,7 @@ int main(int argc, char* argv[])
         return -1;
     }
     
-    auto pdfList = getFileList(pdfFolder, "pdf");
+    auto pdfList = EasyFile::get_file_list(pdfFolder, "pdf");
     
     DeckExporter exporter;
     for(std::string pdfPath : pdfList)
@@ -124,9 +57,9 @@ int main(int argc, char* argv[])
         std::vector<std::string> lines = reader.get_txt();
         if (!lines.empty())
         {
-            std::string txtFile = "./" + getFileName(pdfPath) + ".txt";
+            std::string txtFile = "./" + EasyFile::get_file_name(pdfPath) + ".txt";
             if (!std::filesystem::exists(txtFile))
-                writeFile(txtFile, lines);
+                EasyFile(txtFile, lines);
             else
                 std::cout << "Skipping file " << pdfPath << std::endl;
         }
@@ -140,13 +73,14 @@ int main(int argc, char* argv[])
 
     for(std::string pdfPath : pdfList)
     {
-        std::string txtFile = "./" + getFileName(pdfPath) + ".txt";
-        std::vector<std::string> list = getLines(txtFile);
+        std::string fileName = EasyFile::get_file_name(pdfPath);
+        std::string txtFile = "./" + fileName + ".txt";
+        std::vector<std::string> list = EasyFile(txtFile).get();
         
         Deck deck(csvName);
         for (std::string text : list)
         {
-            deck.push_back(Card(text,getFileName(pdfPath)));
+            deck.push_back(Card(text, fileName));
         }
 
         exporter.push_back(deck);

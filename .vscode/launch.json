@@ -6,17 +6,42 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/output/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/output",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug CMake Bullet Parser",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/output/BulletParser/BulletParser.exe",
             "args": [
                 "--name",
                 "Test"
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/output",
+            "cwd": "${workspaceFolder}/output/BulletParser",
             "environment": [],
-            "externalConsole": true,
-            "MIMode": "gdb"
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ],
-    "argsAfterLaunch": ["-name", "Test"],
     "compounds": []
 }
